@@ -29,7 +29,27 @@ const useMarvelService = () => {
         }
     }
 
-    return {loading, error, clearError, getAllCharacters, getCharacter} // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
+    const getAllComics = async (offset = _baseOfset) => {
+        const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
+        return res.data.results.map(_transformComics);
+    }
+
+    const getComics = async (id) => {
+        const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
+        return _transformComics(res.data.request[0]);
+    }
+
+    const _transformComics = (comics) => {
+        return {
+            id: comics.id,
+            title: comics.title,
+            prices: comics.prices.price,
+            thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
+            creators: comics.creators.items
+        }
+    }
+
+    return {loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComics} // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
 }
 
 export default useMarvelService;
