@@ -1,10 +1,10 @@
 import { useHttp } from "../hooks/http.hook";
 
 const useMarvelService = () => {
-    const {loading, request, error, clearError} = useHttp(); // вытаскиваем наши объекты из хука с помощ деструктуризации
+    const { loading, request, error, clearError } = useHttp(); // вытаскиваем наши объекты из хука с помощ деструктуризации
 
     const _apiBase = 'https://gateway.marvel.com:443/v1/public/';
-    const _apiKey ='apikey=01fb73c6eb03fc99d4525f617ab7db7f';
+    const _apiKey = 'apikey=01fb73c6eb03fc99d4525f617ab7db7f';
     const _baseOfset = 210;
 
     const getAllCharacters = async (offset = _baseOfset) => {
@@ -29,7 +29,7 @@ const useMarvelService = () => {
         }
     }
 
-    const getAllComics = async (offset = _baseOfset) => {
+    const getAllComics = async (offset = 0) => {
         const res = await request(`${_apiBase}comics?limit=8&offset=${offset}&${_apiKey}`);
         return res.data.results.map(_transformComics);
     }
@@ -43,13 +43,19 @@ const useMarvelService = () => {
         return {
             id: comics.id,
             title: comics.title,
-            prices: comics.prices.price,
+            description: comics.description || "There is no description",
+            pageCount: comics.pageCount
+                ? `${comics.pageCount} p.`
+                : "No information about the number of pages",
+            price: comics.prices[0].price
+                ? `${comics.prices[0].price}$`
+                : "not available",
             thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
-            creators: comics.creators.items
+            language: comics.textObjects[0]?.language || "en-us"
         }
     }
 
-    return {loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComics} // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
+    return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComics } // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
 }
 
 export default useMarvelService;
