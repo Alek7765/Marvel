@@ -34,9 +34,9 @@ const useMarvelService = () => {
         return res.data.results.map(_transformComics);
     }
 
-    const getComics = async (id) => {
+    const getComic = async (id) => {
         const res = await request(`${_apiBase}comics/${id}?${_apiKey}`);
-        return _transformComics(res.data.request[0]);
+        return _transformComics(res.data.results[0]);
     }
 
     const _transformComics = (comics) => {
@@ -47,15 +47,15 @@ const useMarvelService = () => {
             pageCount: comics.pageCount
                 ? `${comics.pageCount} p.`
                 : "No information about the number of pages",
+            thumbnail: comics.thumbnail.path + "." + comics.thumbnail.extension,
+            language: comics.textObjects[0]?.language || "en-us",
             price: comics.prices[0].price
                 ? `${comics.prices[0].price}$`
                 : "not available",
-            thumbnail: comics.thumbnail.path + '.' + comics.thumbnail.extension,
-            language: comics.textObjects[0]?.language || "en-us"
-        }
-    }
+        };
+    };
 
-    return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComics } // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
+    return { loading, error, clearError, getAllCharacters, getCharacter, getAllComics, getComic } // возвращаем сущности, т.е. экспортируем их когда будет вызываться наш хук
 }
 
 export default useMarvelService;
