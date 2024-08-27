@@ -9,7 +9,7 @@ const MainPage = lazy(() => import('../pages/MainPage')); // ленивые ди
 const ComicsPage = lazy(() => import('../pages/ComicsPage')); // всегда импортируем после статических импортов
 const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
 
-// 540кб
+
 const App = () => {
 
 
