@@ -2,10 +2,11 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import AppHeader from "../appHeader/AppHeader"; // статические импорты
+import CharForm from "../charForm/CharForm";
 import Spinner from "../spinner/Spinner";
 
 const Page404 = lazy(() => import('../pages/404')); // подгружаем только тогда, когда он действительно появится на стр
-const MainPage = lazy(() => import('../pages/MainPage')); // ленивые динамически еимпорты
+const MainPage = lazy(() => import('../pages/MainPage')); // ленивые динамически импорты
 const ComicsPage = lazy(() => import('../pages/ComicsPage')); // всегда импортируем после статических импортов
 const SingleComicPage = lazy(() => import('../pages/SingleComicPage'));
 
@@ -27,6 +28,7 @@ const App = () => {
                             <Route path="*" element={<Page404 />} />
                         </Routes>
                     </Suspense>
+                    <CharForm />
 
                 </main>
             </div>
