@@ -6,7 +6,11 @@ import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
 import AppBanner from "../appBanner/AppBanner";
 
-const SinglePage = ({Component, dataType}) => {
+// Хотелось бы вынести функцию по загрузке данных как отдельный аргумент
+// Но тогда мы потеряем связь со стэйтами загрузки и ошибки
+// А если вынесем их все в App.js - то они будут одни на все страницы
+
+const SinglePage = ({ Component, dataType }) => {
     const { id } = useParams();
     const [data, setData] = useState(null);
     const { loading, error, getComic, getCharacter, clearError } = useMarvelService();
@@ -17,7 +21,7 @@ const SinglePage = ({Component, dataType}) => {
 
     const updateData = () => {
         clearError();
-        
+
         switch (dataType) {
             case 'comic':
                 getComic(id).then(onDataLoaded);
