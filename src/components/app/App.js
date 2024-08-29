@@ -22,8 +22,8 @@ const App = () => {
                         <Routes fallback={<Spinner />}>
                             <Route path="/" element={<MainPage />} />
                             <Route path="/comics" element={<ComicsPage />} />
-                            <Route path="/comics/:id" element={<SinglePage />} Component={SingleComicLayout} dataType='comic'/>
-                            <Route path="/character/:id" element={<SinglePage />} Component={SingleCharacterLayout} dataType='character'/>
+                            <Route path="/comics/:id" element={<SinglePage Component={SingleComicLayout} dataType='comic' />} />
+                            <Route path="/character/:id" element={<SinglePage Component={SingleCharacterLayout} dataType='character' />} />
                             <Route path="*" element={<Page404 />} />
                         </Routes>
                     </Suspense>
