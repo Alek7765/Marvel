@@ -1,11 +1,27 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 
 import useMarvelService from '../../services/MarvelService';
 import Spinner from '../spinner/Spinner';
 import ErrorMessage from '../errorMessage/ErrorMessage';
+
 import './charList.scss';
+
+const setContent = (process, Component, newItemLoading) => { // состояние, компонент и ф-ция загрузки нового листа с персами
+    switch (process) { // точное сравнение по состоянию
+        case 'waiting': // если состояние ожидания
+            return <Spinner />; // отображать спиннер
+        case 'loading': // если состояние загрузки
+            return newItemLoading ? <Component /> : <Spinner />; //грузится новый лист с персами? рендерим компонент с персами без спиннера : иначе если это 1 загрузка - будет спиннер
+        case 'confirmed': // если персонаж загружен
+            return <Component />; // отобразить компонент с загруженными данными (персонажем)
+        case 'error': // если выйдет ошибка
+            return <ErrorMessage />; // отобразить компонент с ошибкой
+        default: // если не один кейс не выполнится
+            throw new Error('Unexpected process state'); // выкинем новую ошибку с описанием
+    }
+}
 
 const CharList = (props) => {
 
@@ -14,16 +30,18 @@ const CharList = (props) => {
     const [offset, setOffset] = useState(210);
     const [charEnded, setCharEnded] = useState(false);
 
-    const { loading, error, getAllCharacters } = useMarvelService();
+    const { getAllCharacters, process, setProcess } = useMarvelService();
 
     useEffect(() => {
         onRequest(offset, true);
+        // eslint-disable-next-line
     }, []) // если пустой массив, то ф-ция вызовится всего 1 раз
 
     const onRequest = (offset, initial) => {
         initial ? setNewItemLoading(false) : setNewItemLoading(true);
         getAllCharacters(offset)
             .then(onCharListLoaded)
+            .then(() => setProcess('confirmed')) // установить состояние подтверждения, когда лист с персонажами действительно загружен
     }
 
     const onCharListLoaded = (newCharList) => {
@@ -95,16 +113,17 @@ const CharList = (props) => {
         )
     }
 
-    const items = renderItems(charList);
+    const elements = useMemo(() => { // для запоминания значения функции, чтоб 2 раза не рендерилось и персонаж подсвечивался при выборе
+        return setContent(process, () => renderItems(charList), newItemLoading)
+        // eslint-disable-next-line
+    }, [process]); // массив зависимостей, следить когда нужен перерендер
 
-    const errorMessage = error ? <ErrorMessage /> : null;
-    const spinner = loading && !newItemLoading ? <Spinner /> : null;
+    // const errorMessage = error ? <ErrorMessage /> : null; // за данный код сейчас работает ф-ция setContent
+    // const spinner = loading && !newItemLoading ? <Spinner /> : null;
 
     return (
         <div className="char__list">
-            {errorMessage}
-            {spinner}
-            {items}
+            {elements}
             <button
                 className="button button__main button__long"
                 disabled={newItemLoading}
